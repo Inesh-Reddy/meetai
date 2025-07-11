@@ -2,99 +2,39 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/db/auth-client";
-import { useState } from "react";
+import { redirect } from "next/navigation";
+import { useRef } from "react";
 
 export default function Home() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loginEmail, setLoginEmail] = useState("");
-  const [loginPassword, setLoginPassword] = useState("");
+  const nameRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passRef = useRef<HTMLInputElement>(null);
 
-  const { data: session } = authClient.useSession();
+  const onSignup = () => {
+    const name = nameRef.current?.value || "name";
+    const email = emailRef.current?.value || "tests";
+    const password = passRef.current?.value || "pass";
 
-  const onSignUp = () => {
-    authClient.signUp.email({
-      name,
-      email,
-      password,
-    });
-  };
-  const onLogin = () => {
-    authClient.signIn.email({
-      email,
-      password,
-      callbackURL: "/",
-    });
-  };
-
-  const signOut = () => {
-    authClient.signOut();
-  };
-
-  if (session) {
-    return (
-      <div>
-        <h2>logged in as {session.user.name}</h2>
-        <Button onClick={signOut}>Signout</Button>
-      </div>
+    authClient.signUp.email(
+      {
+        name,
+        email,
+        password,
+      },
+      {
+        onSuccess: () => {
+          redirect("/Dashboard");
+        },
+      }
     );
-  }
+  };
 
   return (
     <div>
-      <div>
-        <Input
-          type="name"
-          placeholder="UserName"
-          value={name}
-          onChange={(e) => {
-            setName(e.target.value);
-          }}
-        ></Input>
-        <br />
-        <Input
-          type="email"
-          placeholder="email"
-          value={email}
-          onChange={(e) => {
-            setEmail(e.target.value);
-          }}
-        ></Input>
-        <br />
-        <Input
-          type="password"
-          placeholder="password"
-          value={password}
-          onChange={(e) => {
-            setPassword(e.target.value);
-          }}
-        ></Input>
-        <br />
-        <Button onClick={onSignUp}>SignUp</Button>
-      </div>
-
-      <div>
-        <Input
-          type="email"
-          placeholder="loginemail"
-          value={loginEmail}
-          onChange={(e) => {
-            setLoginEmail(e.target.value);
-          }}
-        ></Input>
-        <br />
-        <Input
-          type="password"
-          placeholder="loginpassword"
-          value={loginPassword}
-          onChange={(e) => {
-            setLoginPassword(e.target.value);
-          }}
-        ></Input>
-        <br />
-        <Button onClick={onLogin}>Login</Button>
-      </div>
+      <Input ref={nameRef} placeholder="name"></Input>
+      <Input ref={emailRef} placeholder="email"></Input>
+      <Input ref={passRef} placeholder="pass"></Input>
+      <Button onClick={onSignup}>Signup</Button>
     </div>
   );
 }
