@@ -169,7 +169,6 @@ const SignInView = () => {
               alt="Image"
               className="h-[92px] w-[92px]"
             />
-            {/* <img src="/logo.svg" alt="Image" className="h-[92px] w-[92px]" /> */}
             <p className="text-2xl font-semibold text-white">Meet. AI</p>
           </div>
         </CardContent>
